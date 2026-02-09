@@ -1,6 +1,7 @@
 import { useState, type JSX } from "react";
 import "./App.css";
 import { useRef, useEffect } from "react";
+import axios from "axios";
 
 type Rectangle = {
   x: number;
@@ -12,6 +13,13 @@ type Rectangle = {
 type Point = {
   x: number;
   y: number;
+};
+
+type RectEdge = {
+  topleft: Point;
+  topright: Point;
+  bottomleft: Point;
+  bottomright: Point;
 };
 
 function drawGrid(
@@ -40,11 +48,13 @@ function drawGrid(
 
 type RectangleDrawerProps = {
   rectangles: Rectangle[];
+  edges: RectEdge[];
   setRectangles: React.Dispatch<React.SetStateAction<Rectangle[]>>;
 };
 
 function RectangleDrawer({
   rectangles,
+  edges,
   setRectangles,
 }: RectangleDrawerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -71,6 +81,18 @@ function RectangleDrawer({
       ctx.strokeRect(r.x, r.y, r.width, r.height);
     });
 
+    //Draw saved rect-edges
+    ctx.fillStyle = "green";
+    // Draw points for each rectangle
+    edges.forEach((e: RectEdge) => {
+      const points = [e.topleft, e.topright, e.bottomleft, e.bottomright];
+      points.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI); // 3px radius
+        ctx.fill();
+      });
+    });
+
     // Draw preview rectangle
     if (start && current) {
       ctx.strokeStyle = "red";
@@ -81,7 +103,7 @@ function RectangleDrawer({
         Math.abs(current.y - start.y),
       );
     }
-  }, [rectangles, start, current]);
+  }, [rectangles, edges, start, current]);
 
   function getMousePos(e: React.MouseEvent<HTMLCanvasElement>): Point {
     const canvas = canvasRef.current!;
@@ -130,13 +152,46 @@ function RectangleDrawer({
 
 function App() {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
+  const [edges, setEdges] = useState<RectEdge[]>([]);
+  const [greeting, setGreeting] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchGreeting = async () => {
+      try {
+        const response = await axios.get("api/greeting/");
+        console.log(response);
+        setGreeting(response.data.text);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchGreeting();
+  }, []);
+
+  const send_rectangles = async () => {
+    try {
+      const response = await axios.post<RectEdge[]>(
+        "api/rectangles/",
+        rectangles,
+      );
+      console.log("API Response:", response);
+      setEdges(response.data);
+      // Don't log edges here - it will be stale
+    } catch (error) {
+      console.error("Error sending rectangles:", error);
+    }
+  };
+
   return (
     <>
-      <h1>SnowApp</h1>{" "}
-      <button onClick={() => console.log({ rectangles })}>hello</button>
+      {greeting && <div>we have a greeting: {greeting}</div>}
+      {!greeting && <div>we dont have a greeting</div>}
+      <h1>SnowApp</h1> <button onClick={send_rectangles}>hello</button>
       <button
         onClick={() => {
           setRectangles([]);
+          setEdges([]);
         }}
       >
         reset
@@ -144,6 +199,7 @@ function App() {
       <div></div>
       <RectangleDrawer
         rectangles={rectangles}
+        edges={edges}
         setRectangles={setRectangles}
       ></RectangleDrawer>
     </>
