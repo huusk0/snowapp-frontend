@@ -169,7 +169,7 @@ function App() {
     fetchGreeting();
   }, []);
 
-  const send_rectangles = async () => {
+  const calculateRectangleCorners = async () => {
     try {
       const response = await axios.post<RectEdge[]>(
         "api/rectangles/",
@@ -187,7 +187,15 @@ function App() {
     <>
       {greeting && <div>we have a greeting: {greeting}</div>}
       {!greeting && <div>we dont have a greeting</div>}
-      <h1>SnowApp</h1> <button onClick={send_rectangles}>hello</button>
+      <h1>SnowApp</h1>
+      <button onClick={calculateRectangleCorners}>Corners</button>
+      <button
+        onClick={() => {
+          console.log("hello");
+        }}
+      >
+        Sectors
+      </button>
       <button
         onClick={() => {
           setRectangles([]);
