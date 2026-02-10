@@ -22,6 +22,13 @@ type RectEdge = {
   bottomright: Point;
 };
 
+type SnowSector = {
+  coords: Point;
+  snow_load: number;
+  color: string;
+  dump_site: boolean;
+};
+
 function drawGrid(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -177,7 +184,18 @@ function App() {
       );
       console.log("API Response:", response);
       setEdges(response.data);
-      // Don't log edges here - it will be stale
+    } catch (error) {
+      console.error("Error sending rectangles:", error);
+    }
+  };
+
+  const calculateRectangleSectors = async () => {
+    try {
+      const response = await axios.post<SnowSector[]>(
+        "/api/snowsectors/",
+        rectangles,
+      );
+      console.log("API Response: ", response);
     } catch (error) {
       console.error("Error sending rectangles:", error);
     }
@@ -189,13 +207,7 @@ function App() {
       {!greeting && <div>we dont have a greeting</div>}
       <h1>SnowApp</h1>
       <button onClick={calculateRectangleCorners}>Corners</button>
-      <button
-        onClick={() => {
-          console.log("hello");
-        }}
-      >
-        Sectors
-      </button>
+      <button onClick={calculateRectangleSectors}>Sectors</button>
       <button
         onClick={() => {
           setRectangles([]);
