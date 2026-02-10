@@ -56,12 +56,14 @@ function drawGrid(
 type RectangleDrawerProps = {
   rectangles: Rectangle[];
   edges: RectEdge[];
+  sectors: SnowSector[];
   setRectangles: React.Dispatch<React.SetStateAction<Rectangle[]>>;
 };
 
 function RectangleDrawer({
   rectangles,
   edges,
+  sectors,
   setRectangles,
 }: RectangleDrawerProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -100,6 +102,15 @@ function RectangleDrawer({
       });
     });
 
+    //Draw saved sectors (as points)
+    sectors.forEach((s: SnowSector) => {
+      const p = s.coords;
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+
     // Draw preview rectangle
     if (start && current) {
       ctx.strokeStyle = "red";
@@ -110,7 +121,7 @@ function RectangleDrawer({
         Math.abs(current.y - start.y),
       );
     }
-  }, [rectangles, edges, start, current]);
+  }, [rectangles, edges, sectors, start, current]);
 
   function getMousePos(e: React.MouseEvent<HTMLCanvasElement>): Point {
     const canvas = canvasRef.current!;
@@ -160,6 +171,7 @@ function RectangleDrawer({
 function App() {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [edges, setEdges] = useState<RectEdge[]>([]);
+  const [sectors, setSectors] = useState<SnowSector[]>([]);
   const [greeting, setGreeting] = useState<string | null>(null);
 
   useEffect(() => {
@@ -196,6 +208,7 @@ function App() {
         rectangles,
       );
       console.log("API Response: ", response);
+      setSectors(response.data);
     } catch (error) {
       console.error("Error sending rectangles:", error);
     }
@@ -212,6 +225,7 @@ function App() {
         onClick={() => {
           setRectangles([]);
           setEdges([]);
+          setSectors([]);
         }}
       >
         reset
@@ -220,6 +234,7 @@ function App() {
       <RectangleDrawer
         rectangles={rectangles}
         edges={edges}
+        sectors={sectors}
         setRectangles={setRectangles}
       ></RectangleDrawer>
     </>
