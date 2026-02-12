@@ -5,12 +5,12 @@ import axios from "axios";
 
 import type { Rectangle, Point, RectEdge, SnowSector } from "./types/rectangle";
 
-function drawGrid(
+const drawGrid = (
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   gridSize: number,
-): void {
+): void => {
   ctx.strokeStyle = "#e0e0e032";
   ctx.lineWidth = 1;
 
@@ -27,7 +27,7 @@ function drawGrid(
     ctx.lineTo(width, y);
     ctx.stroke();
   }
-}
+};
 
 type RectangleDrawerProps = {
   rectangles: Rectangle[];
@@ -36,12 +36,12 @@ type RectangleDrawerProps = {
   setRectangles: React.Dispatch<React.SetStateAction<Rectangle[]>>;
 };
 
-function RectangleDrawer({
+const RectangleDrawer = ({
   rectangles,
   edges,
   sectors,
   setRectangles,
-}: RectangleDrawerProps): JSX.Element {
+}: RectangleDrawerProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [current, setCurrent] = useState<Point | null>(null);
@@ -99,26 +99,26 @@ function RectangleDrawer({
     }
   }, [rectangles, edges, sectors, start, current]);
 
-  function getMousePos(e: React.MouseEvent<HTMLCanvasElement>): Point {
+  const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
-  }
+  };
 
-  function onMouseDown(e: React.MouseEvent<HTMLCanvasElement>): void {
+  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement>): void => {
     setStart(getMousePos(e));
     setCurrent(null);
-  }
+  };
 
-  function onMouseMove(e: React.MouseEvent<HTMLCanvasElement>): void {
+  const onMouseMove = (e: React.MouseEvent<HTMLCanvasElement>): void => {
     if (!start) return;
     setCurrent(getMousePos(e));
-  }
+  };
 
-  function onMouseUp(): void {
+  const onMouseUp = (): void => {
     if (!start || !current) return;
 
     const x = Math.floor(Math.min(start.x, current.x));
@@ -129,7 +129,7 @@ function RectangleDrawer({
     setRectangles((prev) => [...prev, { x, y, width, height }]);
     setStart(null);
     setCurrent(null);
-  }
+  };
 
   return (
     <canvas
@@ -142,9 +142,9 @@ function RectangleDrawer({
       onMouseUp={onMouseUp}
     />
   );
-}
+};
 
-function App() {
+const App = () => {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [edges, setEdges] = useState<RectEdge[]>([]);
   const [sectors, setSectors] = useState<SnowSector[]>([]);
@@ -230,6 +230,6 @@ function App() {
       ></RectangleDrawer>
     </>
   );
-}
+};
 
 export default App;
