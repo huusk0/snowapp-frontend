@@ -3,31 +3,7 @@ import "./App.css";
 import { useRef, useEffect } from "react";
 import axios from "axios";
 
-type Rectangle = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-type Point = {
-  x: number;
-  y: number;
-};
-
-type RectEdge = {
-  topleft: Point;
-  topright: Point;
-  bottomleft: Point;
-  bottomright: Point;
-};
-
-type SnowSector = {
-  coords: Point;
-  snow_load: number;
-  color: string;
-  dump_site: boolean;
-};
+import type { Rectangle, Point, RectEdge, SnowSector } from "./types/rectangle";
 
 function drawGrid(
   ctx: CanvasRenderingContext2D,
@@ -173,6 +149,7 @@ function App() {
   const [edges, setEdges] = useState<RectEdge[]>([]);
   const [sectors, setSectors] = useState<SnowSector[]>([]);
   const [greeting, setGreeting] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGreeting = async () => {
@@ -182,6 +159,17 @@ function App() {
         setGreeting(response.data.text);
       } catch (error) {
         console.error(error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 500) {
+            setErrorMessage("Server error. Please try again later.");
+          } else {
+            setErrorMessage(
+              error.response?.data?.message ?? "Something went wrong",
+            );
+          }
+        } else {
+          setErrorMessage("Unexpected error occurred");
+        }
       }
     };
 
@@ -216,6 +204,9 @@ function App() {
 
   return (
     <>
+      {errorMessage && (
+        <div style={{ color: "red" }}>ERROR: {errorMessage}</div>
+      )}
       {greeting && <div>we have a greeting: {greeting}</div>}
       {!greeting && <div>we dont have a greeting</div>}
       <h1>SnowApp</h1>
