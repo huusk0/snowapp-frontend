@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import type { Rectangle, RectEdge, SnowSector } from "./types/rectangle";
 import { RectangleDrawer } from "./components/rectangleDrawer";
+import { getGreeting } from "./services/greetingService";
 
 const App = () => {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
@@ -15,9 +16,9 @@ const App = () => {
   useEffect(() => {
     const fetchGreeting = async () => {
       try {
-        const response = await axios.get("api/greeting/");
+        const response = await getGreeting();
         console.log(response);
-        setGreeting(response.data.text);
+        setGreeting(response);
       } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error)) {
