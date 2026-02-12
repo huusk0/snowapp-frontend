@@ -5,6 +5,10 @@ import axios from "axios";
 import type { Rectangle, RectEdge, SnowSector } from "./types/rectangle";
 import { RectangleDrawer } from "./components/rectangleDrawer";
 import { getGreeting } from "./services/greetingService";
+import {
+  calculateRectangleCorners,
+  calculateRectangleSectors,
+} from "./services/rectangleService";
 
 const App = () => {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
@@ -38,27 +42,19 @@ const App = () => {
     fetchGreeting();
   }, []);
 
-  const calculateRectangleCorners = async () => {
+  const handleRectangleCorners = async () => {
     try {
-      const response = await axios.post<RectEdge[]>(
-        "api/rectangles/",
-        rectangles,
-      );
-      console.log("API Response:", response);
-      setEdges(response.data);
+      const corners = await calculateRectangleCorners(rectangles);
+      setEdges(corners);
     } catch (error) {
       console.error("Error sending rectangles:", error);
     }
   };
 
-  const calculateRectangleSectors = async () => {
+  const handleRectangleSectors = async () => {
     try {
-      const response = await axios.post<SnowSector[]>(
-        "/api/snowsectors/",
-        rectangles,
-      );
-      console.log("API Response: ", response);
-      setSectors(response.data);
+      const sectors = await calculateRectangleSectors(rectangles);
+      setSectors(sectors);
     } catch (error) {
       console.error("Error sending rectangles:", error);
     }
@@ -72,8 +68,8 @@ const App = () => {
       {greeting && <div>we have a greeting: {greeting}</div>}
       {!greeting && <div>we dont have a greeting</div>}
       <h1>SnowApp</h1>
-      <button onClick={calculateRectangleCorners}>Corners</button>
-      <button onClick={calculateRectangleSectors}>Sectors</button>
+      <button onClick={handleRectangleCorners}>Corners</button>
+      <button onClick={handleRectangleSectors}>Sectors</button>
       <button
         onClick={() => {
           setRectangles([]);
