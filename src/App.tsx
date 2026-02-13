@@ -1,10 +1,22 @@
 import "./App.css";
 import { HomePage_v0 } from "./pages/homePagev0";
+import { Routes, Route, Link } from "react-router-dom";
 const App = () => {
   return (
     <>
       <h1>SnowApp</h1>
-      <HomePage_v0></HomePage_v0>
+      <div>
+        <Link to="/">
+          <button>Home</button>
+        </Link>
+        <Link to="/version0">
+          <button>Version 0</button>
+        </Link>
+      </div>
+      <Routes>
+        <Route path="/" element={<>Hello home page</>} />
+        <Route path="/version0" element={<HomePage_v0 />} />
+      </Routes>
     </>
   );
 };
