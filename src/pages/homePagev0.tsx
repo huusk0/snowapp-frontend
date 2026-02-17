@@ -70,6 +70,7 @@ export const HomePage_v0 = () => {
       <h3>Homepage of version 0</h3>
       <button onClick={handleRectangleCorners}>Corners</button>
       <button onClick={handleRectangleSectors}>Sectors</button>
+      <button onClick={() => console.log("Button pressed")}>Show path</button>
       <button
         onClick={() => {
           setRectangles([]);
