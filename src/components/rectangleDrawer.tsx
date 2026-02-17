@@ -38,7 +38,7 @@ function drawArrow(
   to: Point,
   scale: number,
 ) {
-  const headLength = 5; // length of arrow head
+  const headLength = 15; // length of arrow head
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const angle = Math.atan2(dy, dx);
@@ -91,7 +91,9 @@ export const RectangleDrawer = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Fill the canvas background
+    ctx.fillStyle = "#777777"; // set your desired color
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawGrid(ctx, canvas.width, canvas.height, 25);
     // Draw saved rectangles
@@ -131,7 +133,7 @@ export const RectangleDrawer = ({
     });
 
     //Draw saved path
-    ctx.strokeStyle = "purple";
+    ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
     ctx.lineWidth = 1;
     for (let i = 0; i < path.length - 1; i++) {
