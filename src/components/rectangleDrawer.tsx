@@ -32,7 +32,12 @@ const drawGrid = (
   }
 };
 
-function drawArrow(ctx: CanvasRenderingContext2D, from: Point, to: Point) {
+function drawArrow(
+  ctx: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+  scale: number,
+) {
   const headLength = 5; // length of arrow head
   const dx = to.x - from.x;
   const dy = to.y - from.y;
@@ -40,22 +45,22 @@ function drawArrow(ctx: CanvasRenderingContext2D, from: Point, to: Point) {
 
   // Draw line
   ctx.beginPath();
-  ctx.moveTo(from.x, from.y);
-  ctx.lineTo(to.x, to.y);
+  ctx.moveTo(from.x * scale, from.y * scale);
+  ctx.lineTo(to.x * scale, to.y * scale);
   ctx.stroke();
 
   // Draw arrow head
   ctx.beginPath();
-  ctx.moveTo(to.x, to.y);
+  ctx.moveTo(to.x * scale, to.y * scale);
   ctx.lineTo(
-    to.x - headLength * Math.cos(angle - Math.PI / 6),
-    to.y - headLength * Math.sin(angle - Math.PI / 6),
+    to.x * scale - headLength * Math.cos(angle - Math.PI / 6),
+    to.y * scale - headLength * Math.sin(angle - Math.PI / 6),
   );
   ctx.lineTo(
-    to.x - headLength * Math.cos(angle + Math.PI / 6),
-    to.y - headLength * Math.sin(angle + Math.PI / 6),
+    to.x * scale - headLength * Math.cos(angle + Math.PI / 6),
+    to.y * scale - headLength * Math.sin(angle + Math.PI / 6),
   );
-  ctx.lineTo(to.x, to.y);
+  ctx.lineTo(to.x * scale, to.y * scale);
   ctx.fill();
 }
 
@@ -77,6 +82,7 @@ export const RectangleDrawer = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [current, setCurrent] = useState<Point | null>(null);
+  const [scale, setScale] = useState<number>(2);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,10 +98,15 @@ export const RectangleDrawer = ({
     ctx.strokeStyle = "blue";
     rectangles.forEach((r) => {
       ctx.fillStyle = "rgba(0, 0, 255, 0.75)"; // translucent fill
-      ctx.fillRect(r.x, r.y, r.width, r.height);
+      ctx.fillRect(r.x * scale, r.y * scale, r.width * scale, r.height * scale);
 
       ctx.strokeStyle = "blue";
-      ctx.strokeRect(r.x, r.y, r.width, r.height);
+      ctx.strokeRect(
+        r.x * scale,
+        r.y * scale,
+        r.width * scale,
+        r.height * scale,
+      );
     });
 
     //Draw saved rect-edges
@@ -105,7 +116,7 @@ export const RectangleDrawer = ({
       const points = [e.topleft, e.topright, e.bottomleft, e.bottomright];
       points.forEach((p) => {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI); // 3px radius
+        ctx.arc(p.x * scale, p.y * scale, 3, 0, 2 * Math.PI); // 3px radius
         ctx.fill();
       });
     });
@@ -115,7 +126,7 @@ export const RectangleDrawer = ({
       const p = s.coords;
       ctx.fillStyle = s.color;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+      ctx.arc(p.x * scale, p.y * scale, 3, 0, 2 * Math.PI);
       ctx.fill();
     });
 
@@ -124,7 +135,7 @@ export const RectangleDrawer = ({
     ctx.fillStyle = "black";
     ctx.lineWidth = 1;
     for (let i = 0; i < path.length - 1; i++) {
-      drawArrow(ctx, path[i], path[i + 1]);
+      drawArrow(ctx, path[i], path[i + 1], scale);
     }
 
     // Draw preview rectangle
@@ -137,7 +148,7 @@ export const RectangleDrawer = ({
         Math.abs(current.y - start.y),
       );
     }
-  }, [rectangles, edges, sectors, path, start, current]);
+  }, [rectangles, edges, sectors, path, scale, start, current]);
 
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current!;
@@ -161,25 +172,41 @@ export const RectangleDrawer = ({
   const onMouseUp = (): void => {
     if (!start || !current) return;
 
-    const x = Math.floor(Math.min(start.x, current.x));
-    const y = Math.floor(Math.min(start.y, current.y));
-    const width = Math.abs(current.x - start.x);
-    const height = Math.abs(current.y - start.y);
+    const x = Math.floor(Math.min(start.x / scale, current.x / scale));
+    const y = Math.floor(Math.min(start.y / scale, current.y / scale));
+    const width = Math.floor(Math.abs(current.x - start.x) / scale);
+    const height = Math.floor(Math.abs(current.y - start.y) / scale);
 
     setRectangles((prev) => [...prev, { x, y, width, height }]);
     setStart(null);
     setCurrent(null);
   };
 
+  const handleZoom = (direction: "in" | "out") => {
+    setScale((prevScale) => {
+      const zoomStep = 0.1;
+
+      if (direction === "in") {
+        return prevScale + zoomStep;
+      } else {
+        return Math.max(0.1, prevScale - zoomStep); // prevent going to 0 or negative
+      }
+    });
+  };
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={400}
-      height={300}
-      style={{ border: "1px solid black", cursor: "crosshair" }}
-      onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        style={{ border: "1px solid black", cursor: "crosshair" }}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+      />
+      <button onClick={() => handleZoom("in")}>+</button>
+      <button onClick={() => handleZoom("out")}>-</button>
+    </>
   );
 };

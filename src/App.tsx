@@ -5,14 +5,12 @@ const App = () => {
   return (
     <>
       <h1>SnowApp</h1>
-      <div>
-        <Link to="/">
-          <button>Home</button>
-        </Link>
-        <Link to="/version0">
-          <button>Version 0</button>
-        </Link>
-      </div>
+      <Link to="/">
+        <button>Home</button>
+      </Link>
+      <Link to="/version0">
+        <button>Version 0</button>
+      </Link>
       <Routes>
         <Route path="/" element={<>Hello home page</>} />
         <Route path="/version0" element={<HomePage_v0 />} />
