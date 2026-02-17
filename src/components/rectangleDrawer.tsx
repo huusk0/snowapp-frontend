@@ -70,6 +70,9 @@ type RectangleDrawerProps = {
   sectors: SnowSector[];
   path: Point[];
   setRectangles: React.Dispatch<React.SetStateAction<Rectangle[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<RectEdge[]>>;
+  setSectors: React.Dispatch<React.SetStateAction<SnowSector[]>>;
+  setPath: React.Dispatch<React.SetStateAction<Point[]>>;
 };
 
 export const RectangleDrawer = ({
@@ -78,6 +81,9 @@ export const RectangleDrawer = ({
   sectors,
   path,
   setRectangles,
+  setEdges,
+  setSectors,
+  setPath,
 }: RectangleDrawerProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
@@ -179,9 +185,12 @@ export const RectangleDrawer = ({
     const width = Math.floor(Math.abs(current.x - start.x) / scale);
     const height = Math.floor(Math.abs(current.y - start.y) / scale);
 
-    setRectangles((prev) => [...prev, { x, y, width, height }]);
+    setRectangles([{ x, y, width, height }]);
     setStart(null);
     setCurrent(null);
+    setEdges([]);
+    setSectors([]);
+    setPath([]);
     console.log(
       `rect{x: ${x} y: ${y} width: ${width}, height ${height} scale:   ${scale}`,
     );

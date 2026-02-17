@@ -104,6 +104,9 @@ export const HomePage_v0 = () => {
         sectors={sectors}
         path={path}
         setRectangles={setRectangles}
+        setEdges={setEdges}
+        setSectors={setSectors}
+        setPath={setPath}
       ></RectangleDrawer>
     </>
   );
