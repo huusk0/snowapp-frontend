@@ -1,5 +1,10 @@
 import axios from "axios";
-import type { RectEdge, SnowSector, Rectangle } from "../types/rectangle";
+import type {
+  RectEdge,
+  SnowSector,
+  Rectangle,
+  Point,
+} from "../types/rectangle";
 
 export const calculateRectangleCorners = async (
   rectangles: Rectangle[],
@@ -16,6 +21,14 @@ export const calculateRectangleSectors = async (
     "/api/snowsectors/",
     rectangles,
   );
+  console.log("API Response: ", response);
+  return response.data;
+};
+
+export const calculateTSPPath0 = async (
+  rectangles: Rectangle[],
+): Promise<Point[]> => {
+  const response = await axios.post<Point[]>("/api/tsp0/", rectangles);
   console.log("API Response: ", response);
   return response.data;
 };

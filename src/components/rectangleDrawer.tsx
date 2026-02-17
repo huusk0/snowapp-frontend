@@ -36,6 +36,7 @@ type RectangleDrawerProps = {
   rectangles: Rectangle[];
   edges: RectEdge[];
   sectors: SnowSector[];
+  path: Point[];
   setRectangles: React.Dispatch<React.SetStateAction<Rectangle[]>>;
 };
 
@@ -43,6 +44,7 @@ export const RectangleDrawer = ({
   rectangles,
   edges,
   sectors,
+  path,
   setRectangles,
 }: RectangleDrawerProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -90,6 +92,14 @@ export const RectangleDrawer = ({
       ctx.fill();
     });
 
+    //Draw saved path (debug: AS DOTS FOR NOW)
+    path.forEach((p: Point) => {
+      ctx.fillStyle = "purple";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+
     // Draw preview rectangle
     if (start && current) {
       ctx.strokeStyle = "red";
@@ -100,7 +110,7 @@ export const RectangleDrawer = ({
         Math.abs(current.y - start.y),
       );
     }
-  }, [rectangles, edges, sectors, start, current]);
+  }, [rectangles, edges, sectors, path, start, current]);
 
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current!;

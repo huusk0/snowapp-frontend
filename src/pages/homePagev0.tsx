@@ -2,18 +2,25 @@ import { useState } from "react";
 import "../App.css";
 import { useEffect } from "react";
 import axios from "axios";
-import type { Rectangle, RectEdge, SnowSector } from "../types/rectangle";
+import type {
+  Point,
+  Rectangle,
+  RectEdge,
+  SnowSector,
+} from "../types/rectangle";
 import { RectangleDrawer } from "../components/rectangleDrawer";
 import { getGreeting } from "../services/greetingService";
 import {
   calculateRectangleCorners,
   calculateRectangleSectors,
+  calculateTSPPath0,
 } from "../services/rectangleService";
 
 export const HomePage_v0 = () => {
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [edges, setEdges] = useState<RectEdge[]>([]);
   const [sectors, setSectors] = useState<SnowSector[]>([]);
+  const [path, setPath] = useState<Point[]>([]);
   const [greeting, setGreeting] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -60,6 +67,15 @@ export const HomePage_v0 = () => {
     }
   };
 
+  const handleTSPPath = async () => {
+    try {
+      const path = await calculateTSPPath0(rectangles);
+      setPath(path);
+    } catch (error) {
+      console.error("Error sending rectangles:", error);
+    }
+  };
+
   return (
     <>
       {errorMessage && (
@@ -70,12 +86,13 @@ export const HomePage_v0 = () => {
       <h3>Homepage of version 0</h3>
       <button onClick={handleRectangleCorners}>Corners</button>
       <button onClick={handleRectangleSectors}>Sectors</button>
-      <button onClick={() => console.log("Button pressed")}>Show path</button>
+      <button onClick={handleTSPPath}>Show path</button>
       <button
         onClick={() => {
           setRectangles([]);
           setEdges([]);
           setSectors([]);
+          setPath([]);
         }}
       >
         reset
@@ -85,6 +102,7 @@ export const HomePage_v0 = () => {
         rectangles={rectangles}
         edges={edges}
         sectors={sectors}
+        path={path}
         setRectangles={setRectangles}
       ></RectangleDrawer>
     </>
