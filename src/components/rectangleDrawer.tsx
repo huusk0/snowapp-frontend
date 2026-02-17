@@ -82,7 +82,7 @@ export const RectangleDrawer = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [current, setCurrent] = useState<Point | null>(null);
-  const [scale, setScale] = useState<number>(2);
+  const [scale, setScale] = useState<number>(4);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -180,6 +180,9 @@ export const RectangleDrawer = ({
     setRectangles((prev) => [...prev, { x, y, width, height }]);
     setStart(null);
     setCurrent(null);
+    console.log(
+      `rect{x: ${x} y: ${y} width: ${width}, height ${height} scale:   ${scale}`,
+    );
   };
 
   const handleZoom = (direction: "in" | "out") => {
