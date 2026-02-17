@@ -32,6 +32,33 @@ const drawGrid = (
   }
 };
 
+function drawArrow(ctx: CanvasRenderingContext2D, from: Point, to: Point) {
+  const headLength = 5; // length of arrow head
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const angle = Math.atan2(dy, dx);
+
+  // Draw line
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.stroke();
+
+  // Draw arrow head
+  ctx.beginPath();
+  ctx.moveTo(to.x, to.y);
+  ctx.lineTo(
+    to.x - headLength * Math.cos(angle - Math.PI / 6),
+    to.y - headLength * Math.sin(angle - Math.PI / 6),
+  );
+  ctx.lineTo(
+    to.x - headLength * Math.cos(angle + Math.PI / 6),
+    to.y - headLength * Math.sin(angle + Math.PI / 6),
+  );
+  ctx.lineTo(to.x, to.y);
+  ctx.fill();
+}
+
 type RectangleDrawerProps = {
   rectangles: Rectangle[];
   edges: RectEdge[];
@@ -92,13 +119,13 @@ export const RectangleDrawer = ({
       ctx.fill();
     });
 
-    //Draw saved path (debug: AS DOTS FOR NOW)
-    path.forEach((p: Point) => {
-      ctx.fillStyle = "purple";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
-      ctx.fill();
-    });
+    //Draw saved path
+    ctx.strokeStyle = "purple";
+    ctx.fillStyle = "black";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < path.length - 1; i++) {
+      drawArrow(ctx, path[i], path[i + 1]);
+    }
 
     // Draw preview rectangle
     if (start && current) {
