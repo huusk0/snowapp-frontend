@@ -12,7 +12,7 @@ const App = () => {
         <button>Version 0</button>
       </Link>
       <Routes>
-        <Route path="/" element={<>Hello home page</>} />
+        <Route path="/" element={<div>Hello home page</div>} />
         <Route path="/version0" element={<HomePage_v0 />} />
       </Routes>
     </>
