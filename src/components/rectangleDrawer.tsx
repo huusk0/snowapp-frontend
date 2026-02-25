@@ -142,7 +142,13 @@ export const RectangleDrawer = ({
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
     ctx.lineWidth = 1;
+    const n = path.length;
     for (let i = 0; i < path.length - 1; i++) {
+      const colorValue = (i / (n - 1)) * 255;
+      const r = colorValue;
+      const g = colorValue;
+      const b = colorValue;
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
       drawArrow(ctx, path[i], path[i + 1], scale);
     }
 
