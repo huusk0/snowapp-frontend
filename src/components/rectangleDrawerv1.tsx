@@ -88,7 +88,8 @@ export const RectangleDrawerv1 = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [current, setCurrent] = useState<Point | null>(null);
-  const [scale, setScale] = useState<number>(10);
+  const [scale, setScale] = useState<number>(4);
+  const gridSize = 10;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -101,20 +102,19 @@ export const RectangleDrawerv1 = ({
     ctx.fillStyle = "#777777"; // set your desired color
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawGrid(ctx, canvas.width, canvas.height, scale);
+    drawGrid(ctx, canvas.width, canvas.height, gridSize * scale);
     // Draw saved rectangles
     ctx.strokeStyle = "blue";
     rectangles.forEach((r) => {
       ctx.fillStyle = "rgba(0, 0, 255, 0.75)"; // translucent fill
-      ctx.fillRect(r.x * scale, r.y * scale, r.width * scale, r.height * scale);
+      const x = r.x * scale;
+      const y = r.y * scale;
+      const width = r.width * scale;
+      const height = r.height * scale;
+      ctx.fillRect(x, y, width, height);
 
       ctx.strokeStyle = "blue";
-      ctx.strokeRect(
-        r.x * scale,
-        r.y * scale,
-        r.width * scale,
-        r.height * scale,
-      );
+      ctx.strokeRect(x, y, width, height);
     });
 
     //Draw saved rect-edges
@@ -191,8 +191,8 @@ export const RectangleDrawerv1 = ({
     const rawWidth = Math.floor(Math.abs(current.x - start.x));
     const rawHeight = Math.floor(Math.abs(current.y - start.y));
 
-    const x = Math.floor(rawX / scale);
-    const y = Math.floor(rawY / scale);
+    const x = Math.floor(rawX / (gridSize * scale)) * gridSize;
+    const y = Math.floor(rawY / (gridSize * scale)) * gridSize;
     const width = Math.ceil(rawWidth / scale);
     const height = Math.ceil(rawHeight / scale);
 
@@ -230,6 +230,7 @@ export const RectangleDrawerv1 = ({
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
       />
+      <>{scale}</>
       <button onClick={() => handleZoom("in")}>+</button>
       <button onClick={() => handleZoom("out")}>-</button>
     </>
