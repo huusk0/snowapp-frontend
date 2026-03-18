@@ -1,5 +1,6 @@
 import "./App.css";
 import { HomePage_v0 } from "./pages/homePagev0";
+import { HomePage_v1 } from "./pages/homePagev1";
 import { Routes, Route, Link } from "react-router-dom";
 const App = () => {
   return (
@@ -11,9 +12,13 @@ const App = () => {
       <Link to="/version0">
         <button>Version 0</button>
       </Link>
+      <Link to="/version1">
+        <button>Version 1</button>
+      </Link>
       <Routes>
         <Route path="/" element={<div>Hello home page</div>} />
         <Route path="/version0" element={<HomePage_v0 />} />
+        <Route path="/version1" element={<HomePage_v1 />} />
       </Routes>
     </>
   );
