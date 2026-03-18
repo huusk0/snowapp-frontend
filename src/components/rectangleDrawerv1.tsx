@@ -107,8 +107,8 @@ export const RectangleDrawerv1 = ({
     ctx.strokeStyle = "blue";
     rectangles.forEach((r) => {
       ctx.fillStyle = "rgba(0, 0, 255, 0.75)"; // translucent fill
-      const x = r.x * scale * gridSize;
-      const y = r.y * scale * gridSize;
+      const x = r.x * scale;
+      const y = r.y * scale;
       const width = r.width * scale;
       const height = r.height * scale;
       ctx.fillRect(x, y, width, height);
@@ -124,8 +124,7 @@ export const RectangleDrawerv1 = ({
       const points = [e.topleft, e.topright, e.bottomleft, e.bottomright];
       points.forEach((p) => {
         ctx.beginPath();
-        console.log(`pointssss x: ${p.x} y: ${p.y}`);
-        ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI); // 3px radius
+        ctx.arc(p.x * scale, p.y * scale, 3, 0, 2 * Math.PI); // 3px radius
         ctx.fill();
       });
     });
@@ -192,8 +191,8 @@ export const RectangleDrawerv1 = ({
     const rawWidth = Math.floor(Math.abs(current.x - start.x));
     const rawHeight = Math.floor(Math.abs(current.y - start.y));
 
-    const x = Math.floor(rawX / (gridSize * scale));
-    const y = Math.floor(rawY / (gridSize * scale));
+    const x = Math.floor(rawX / (gridSize * scale)) * gridSize;
+    const y = Math.floor(rawY / (gridSize * scale)) * gridSize;
     const width = Math.ceil(rawWidth / scale);
     const height = Math.ceil(rawHeight / scale);
 
