@@ -88,7 +88,7 @@ export const RectangleDrawerv1 = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [start, setStart] = useState<Point | null>(null);
   const [current, setCurrent] = useState<Point | null>(null);
-  const [scale, setScale] = useState<number>(4);
+  const [scale, setScale] = useState<number>(10);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -101,7 +101,7 @@ export const RectangleDrawerv1 = ({
     ctx.fillStyle = "#777777"; // set your desired color
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawGrid(ctx, canvas.width, canvas.height, 25);
+    drawGrid(ctx, canvas.width, canvas.height, scale);
     // Draw saved rectangles
     ctx.strokeStyle = "blue";
     rectangles.forEach((r) => {
@@ -186,12 +186,17 @@ export const RectangleDrawerv1 = ({
   const onMouseUp = (): void => {
     if (!start || !current) return;
 
-    const x = Math.floor(Math.min(start.x / scale, current.x / scale));
-    const y = Math.floor(Math.min(start.y / scale, current.y / scale));
-    const width = Math.floor(Math.abs(current.x - start.x) / scale);
-    const height = Math.floor(Math.abs(current.y - start.y) / scale);
+    const rawX = Math.min(start.x, current.x);
+    const rawY = Math.min(start.y, current.y);
+    const rawWidth = Math.floor(Math.abs(current.x - start.x));
+    const rawHeight = Math.floor(Math.abs(current.y - start.y));
 
-    setRectangles([{ x, y, width, height }]);
+    const x = Math.floor(rawX / scale);
+    const y = Math.floor(rawY / scale);
+    const width = Math.ceil(rawWidth / scale);
+    const height = Math.ceil(rawHeight / scale);
+
+    setRectangles([...rectangles, { x, y, width, height }]);
     setStart(null);
     setCurrent(null);
     setEdges([]);
